@@ -53,34 +53,6 @@ export default function Hero({ onStartCoding }: HeroProps) {
         <div className="pt-8">
           <StatsDisplay />
         </div>
-
-        {/* Scrollbar Test Box */}
-        <div className="pt-8">
-          <div className="max-w-md mx-auto p-4 border border-primary rounded-sm bg-card">
-            <h3 className="text-sm font-semibold mb-2 text-primary">✨ Custom Scrollbar Test</h3>
-            <div 
-              className="h-32 overflow-y-auto bg-background/50 p-3 rounded text-xs"
-              style={{
-                scrollbarWidth: 'thin',
-                scrollbarColor: 'rgba(59, 130, 246, 0.6) transparent'
-              }}
-            >
-              <p className="text-muted-foreground leading-relaxed">
-                Scroll here to see the custom 4px ultra-slim circular scrollbar in action! 
-                The scrollbar is electric blue and fully rounded. 
-                Hover over it to see it brighten and expand slightly.
-                This demonstrates the custom scrollbar styling applied throughout the application.
-                Keep scrolling to see more...
-                The scrollbar should be barely visible but functional.
-                It matches the minimalist design of NeuroCoder AI.
-                Production-ready and beautiful!
-                Try hovering over the scrollbar to see the hover effect.
-                The color will brighten and it will expand slightly for better visibility.
-                This is the same scrollbar used in the code output and prompt areas.
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   )
