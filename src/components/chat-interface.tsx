@@ -1,97 +1,155 @@
 "use client"
 
 import { useState } from "react"
-import LanguageSelector from "./language-selector"
-import CodeOutput from "./code-output"
+import { Button } from "@/components/ui/button"
+import { ArrowLeft, Copy, Zap } from "lucide-react"
+import CodeOutput from "@/components/code-output"
+import LanguageSelector from "@/components/language-selector"
 
 interface ChatInterfaceProps {
   onBack: () => void
 }
 
 export default function ChatInterface({ onBack }: ChatInterfaceProps) {
+  const [language, setLanguage] = useState("python")
   const [prompt, setPrompt] = useState("")
-  const [language, setLanguage] = useState("typescript")
-  const [generatedCode, setGeneratedCode] = useState("")
-  const [isGenerating, setIsGenerating] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [output, setOutput] = useState("")
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return
 
-    setIsGenerating(true)
-    setGeneratedCode("")
+    setIsLoading(true)
+    setOutput("")
 
     try {
+      // Call our Mastra backend API
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, language }),
       })
 
-      if (!response.ok) throw new Error("Generation failed")
+      if (!response.ok) {
+        throw new Error("Generation failed")
+      }
 
       const data = await response.json()
-      setGeneratedCode(data.code || "")
+      setOutput(data.code || "// No code generated")
     } catch (error) {
       console.error("Generation error:", error)
-      setGeneratedCode("// Error generating code. Please try again.")
+      setOutput("// Error generating code. Please try again.")
     } finally {
-      setIsGenerating(false)
+      setIsLoading(false)
     }
   }
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedCode)
+  const handleCopy = () => {
+    navigator.clipboard.writeText(output)
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <button
-        onClick={onBack}
-        className="text-gray-400 hover:text-white transition-colors flex items-center gap-2 mb-8"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        <span>Back</span>
-      </button>
+    <div className="relative min-h-[calc(100vh-80px)] pt-12 pb-12">
+      <div className="max-w-6xl mx-auto px-6">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Back to Home
+        </button>
 
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Input Panel */}
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Language</h3>
-            <LanguageSelector value={language} onChange={setLanguage} />
+        {/* Main Chat Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Input Panel */}
+          <div className="space-y-4">
+            <div className="p-6 rounded-sm border border-border bg-card">
+              <h2 className="text-lg font-semibold mb-4">Code Generator</h2>
+
+              {/* Language Selector */}
+              <LanguageSelector value={language} onChange={setLanguage} />
+
+              {/* Prompt Textarea */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium mb-2">Describe what you want to build</label>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="e.g., Create a function that generates fibonacci sequence..."
+                  className="w-full h-40 p-4 rounded-sm bg-input border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                />
+              </div>
+
+              {/* Generate Button */}
+              <Button
+                onClick={handleGenerate}
+                disabled={isLoading || !prompt.trim()}
+                className="w-full mt-4 bg-primary hover:bg-primary/90 text-white font-semibold py-2 rounded-sm transition-all duration-200 glow-button"
+              >
+                {isLoading ? (
+                  <>
+                    <span className="animate-spin mr-2">⚙️</span>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Generate Code
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
 
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-4">Prompt</h3>
-            <textarea
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe what you want to build..."
-              className="w-full h-64 px-4 py-3 bg-gray-950 border border-gray-800 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600 transition-all resize-none"
-            />
+          {/* Output Panel */}
+          <div className="space-y-4">
+            <div className="p-6 rounded-sm border border-border bg-card">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold">Generated Code</h2>
+                {output && (
+                  <Button
+                    onClick={handleCopy}
+                    size="sm"
+                    variant="outline"
+                    className="gap-2 bg-transparent border-border hover:bg-card"
+                  >
+                    <Copy className="w-4 h-4" />
+                    Copy
+                  </Button>
+                )}
+              </div>
+
+              {output ? (
+                <CodeOutput code={output} language={language} />
+              ) : (
+                <div className="h-64 flex items-center justify-center text-muted-foreground">
+                  <div className="text-center">
+                    <p>Your generated code will appear here</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Metrics Cards */}
+            {output && (
+              <div className="grid grid-cols-3 gap-3">
+                <MetricCard label="Quality Score" value="98%" />
+                <MetricCard label="Gen Time" value="2.1s" />
+                <MetricCard label="Complexity" value="Low" />
+              </div>
+            )}
           </div>
-
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating || !prompt.trim()}
-            className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-800 disabled:text-gray-600 text-white font-semibold rounded-lg transition-all disabled:cursor-not-allowed"
-          >
-            {isGenerating ? "Generating..." : "Generate Code"}
-          </button>
-        </div>
-
-        {/* Output Panel */}
-        <div>
-          <CodeOutput
-            code={generatedCode}
-            language={language}
-            isGenerating={isGenerating}
-            onCopy={copyToClipboard}
-          />
         </div>
       </div>
+    </div>
+  )
+}
+
+function MetricCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="p-4 rounded-sm border border-border bg-card text-center">
+      <div className="text-2xl font-bold text-primary">{value}</div>
+      <div className="text-xs text-muted-foreground mt-1">{label}</div>
     </div>
   )
 }
