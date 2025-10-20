@@ -158,28 +158,38 @@
   transform: translateY(-2px);
 }
 
-/* Custom tiny circular scrollbar */
+/* Ultra-slim circular scrollbar with spacing */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
   background: transparent;
+  margin: 4px 0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.4);
   border-radius: 10px;
-  transition: background 0.2s ease;
+  transition: all 0.3s ease;
+  margin-right: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.6);
+  background: rgba(59, 130, 246, 0.8);
+  width: 6px;
 }
 
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+  scrollbar-color: rgba(59, 130, 246, 0.4) transparent;
+}
+
+/* Add padding to scrollable containers */
+.overflow-auto,
+.overflow-y-auto,
+.overflow-x-auto {
+  padding-right: 8px;
 }
