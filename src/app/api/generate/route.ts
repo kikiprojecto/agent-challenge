@@ -14,47 +14,62 @@ export async function POST(req: NextRequest) {
 
     const startTime = Date.now();
 
-    // Use the NeuroCoder agent to generate code
-    const result = await neuroCoderAgent.generate(
-      `Generate ${language} code for: ${prompt}`,
-      {
-        toolChoice: 'required',
-        onStepFinish: (step) => {
-          console.log('Step finished:', step.toolCalls);
-        },
-      }
-    );
+    // Use the NeuroCoder agent to generate text (compatible with V2 models)
+    const result = await neuroCoderAgent.text({
+      messages: [
+        {
+          role: 'user',
+          content: `You are an expert ${language} developer. Generate production-ready code for: ${prompt}
+
+Please provide:
+1. Complete, working ${language} code
+2. Clear explanation of what the code does
+3. List of dependencies needed
+
+Format your response with the code in a markdown code block.`
+        }
+      ]
+    });
 
     const executionTime = (Date.now() - startTime) / 1000;
 
-    // Extract code from the agent's response
+    // Extract code from markdown blocks
+    const generatedText = result.text || '';
     let code = '';
     let explanation = '';
     let dependencies: string[] = [];
     let complexity = 'medium';
 
-    // Check if the agent used the code generator tool
-    if (result.toolCalls && result.toolCalls.length > 0) {
-      const codeGenCall = result.toolCalls.find(
-        (call: any) => call.toolName === 'codeGeneratorTool'
-      );
-      
-      if (codeGenCall && codeGenCall.result) {
-        code = codeGenCall.result.code || '';
-        explanation = codeGenCall.result.explanation || '';
-        dependencies = codeGenCall.result.dependencies || [];
-        complexity = codeGenCall.result.estimatedComplexity || 'medium';
-      }
+    // Extract code from markdown code blocks
+    const codeBlockMatch = generatedText.match(/```[\w]*\n([\s\S]*?)```/);
+    if (codeBlockMatch) {
+      code = codeBlockMatch[1].trim();
     }
 
-    // Fallback: extract from text response
-    if (!code && result.text) {
-      const codeBlockMatch = result.text.match(/```[\w]*\n([\s\S]*?)```/);
-      if (codeBlockMatch) {
-        code = codeBlockMatch[1].trim();
-      }
-      explanation = result.text.replace(/```[\s\S]*?```/g, '').trim();
+    // Extract explanation (text outside code blocks)
+    explanation = generatedText.replace(/```[\s\S]*?```/g, '').trim();
+    if (!explanation || explanation.length < 20) {
+      explanation = `Generated ${language} code based on your requirements.`;
     }
+
+    // Parse dependencies from code
+    if (code) {
+      // Simple dependency extraction
+      const importMatches = code.matchAll(/(?:import|from|require)\s+.*?['"]([^'"]+)['"]/g);
+      for (const match of importMatches) {
+        const dep = match[1];
+        if (dep && !dep.startsWith('.') && !dep.startsWith('/')) {
+          dependencies.push(dep.split('/')[0]);
+        }
+      }
+      dependencies = [...new Set(dependencies)]; // Remove duplicates
+    }
+
+    // Estimate complexity
+    const lines = code.split('\n').length;
+    if (lines < 30) complexity = 'simple';
+    else if (lines < 100) complexity = 'medium';
+    else complexity = 'complex';
 
     return NextResponse.json({
       code: code || '// No code generated',
