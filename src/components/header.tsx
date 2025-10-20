@@ -22,8 +22,14 @@ export default function Header() {
             <div className="w-2 h-2 rounded-full bg-green-500" />
             Production Ready
           </div>
-          <a href="#" className="p-2 hover:bg-card transition-colors rounded-sm" aria-label="GitHub">
-            <Github className="w-5 h-5 text-foreground" />
+          <a 
+            href="https://github.com/kikiprojecto/agent-challenge" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="p-2 hover:bg-card hover:scale-110 transition-all duration-200 rounded-sm group" 
+            aria-label="View on GitHub"
+          >
+            <Github className="w-5 h-5 text-foreground group-hover:text-primary transition-colors" />
           </a>
         </div>
       </div>
