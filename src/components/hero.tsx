@@ -23,8 +23,10 @@ export default function Hero({ onStartCoding }: HeroProps) {
         </h1>
 
         {/* Subtitle */}
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Generate, review, and execute production-ready code instantly. Powered by decentralized AI infrastructure.
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+          Generate, review, and execute production-ready code instantly.
+          <br />
+          Powered by decentralized AI infrastructure.
         </p>
 
         {/* CTA Button */}
