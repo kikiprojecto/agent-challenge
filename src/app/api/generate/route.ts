@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { neuroCoderAgent } from '@/mastra/agents';
+import { createOllama } from 'ollama-ai-provider-v2';
+import { generateText } from 'ai';
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,27 +15,33 @@ export async function POST(req: NextRequest) {
 
     const startTime = Date.now();
 
-    // Use the NeuroCoder agent to generate text (compatible with V2 models)
-    const result = await neuroCoderAgent.text({
-      messages: [
-        {
-          role: 'user',
-          content: `You are an expert ${language} developer. Generate production-ready code for: ${prompt}
+    // Configure Ollama
+    const ollama = createOllama({
+      baseURL: process.env.NOS_OLLAMA_API_URL || process.env.OLLAMA_API_URL || 'http://localhost:11434',
+    });
+
+    const modelName = process.env.NOS_MODEL_NAME_AT_ENDPOINT || process.env.MODEL_NAME_AT_ENDPOINT || 'qwen3:8b';
+
+    // Generate code using Ollama directly
+    const { text: generatedText } = await generateText({
+      model: ollama(modelName),
+      prompt: `You are an expert ${language} developer. Generate production-ready code for the following requirement:
+
+${prompt}
 
 Please provide:
 1. Complete, working ${language} code
 2. Clear explanation of what the code does
-3. List of dependencies needed
+3. List of any dependencies needed
 
-Format your response with the code in a markdown code block.`
-        }
-      ]
+Format your response with the code in a markdown code block using triple backticks.`,
+      temperature: 0.7,
+      maxTokens: 2000,
     });
 
     const executionTime = (Date.now() - startTime) / 1000;
 
     // Extract code from markdown blocks
-    const generatedText = result.text || '';
     let code = '';
     let explanation = '';
     let dependencies: string[] = [];
