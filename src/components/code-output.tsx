@@ -47,7 +47,13 @@ export default function CodeOutput({ code, language }: CodeOutputProps) {
   }, [code])
 
   return (
-    <div className="bg-card border border-border rounded-sm p-4 overflow-auto max-h-64 font-mono text-sm">
+    <div 
+      className="bg-card border border-border rounded-sm p-4 overflow-auto max-h-64 font-mono text-sm"
+      style={{
+        scrollbarWidth: 'thin',
+        scrollbarColor: 'rgba(59, 130, 246, 0.5) transparent'
+      }}
+    >
       <pre className="text-foreground" dangerouslySetInnerHTML={{ __html: highlighted }} />
     </div>
   )

@@ -77,6 +77,10 @@ export default function ChatInterface({ onBack }: ChatInterfaceProps) {
                   onChange={(e) => setPrompt(e.target.value)}
                   placeholder="e.g., Create a function that generates fibonacci sequence..."
                   className="w-full h-40 p-4 rounded-sm bg-input border border-border text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                  style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: 'rgba(59, 130, 246, 0.5) transparent'
+                  }}
                 />
               </div>
 
