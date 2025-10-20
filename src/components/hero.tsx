@@ -6,107 +6,86 @@ interface HeroProps {
 
 export default function Hero({ onStartCoding }: HeroProps) {
   return (
-    <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="text-center space-y-12 py-20">
-        <div className="space-y-6 animate-fade-in">
-          <div className="inline-block px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-300 text-sm mb-4">
-            🏆 Nosana Agents 102 Challenge
-          </div>
-          <h2 className="text-6xl md:text-7xl font-bold text-white">
-            Build Smarter with
-            <span className="block mt-2 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent animate-gradient">
-              AI-Powered Coding
-            </span>
-          </h2>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            Generate, review, test, and deploy production-ready code using{" "}
-            <span className="text-purple-400 font-semibold">self-improving AI agents</span> on
-            decentralized infrastructure
-          </p>
-        </div>
+    <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="text-center space-y-16">
+        {/* CTA Button */}
+        <button
+          onClick={onStartCoding}
+          className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-lg transition-all duration-200"
+        >
+          <span>Start Coding Now</span>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+          </svg>
+        </button>
 
         {/* Feature Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mt-16 px-4">
+        <div className="grid md:grid-cols-3 gap-6 mt-16">
           {[
             {
-              icon: "🤖",
-              title: "AI Code Generation",
-              desc: "Natural language to production code in 6 languages",
-              color: "purple",
+              icon: (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                </svg>
+              ),
+              title: "Code Generation",
+              desc: "AI-powered code generation for any language",
             },
             {
-              icon: "🔒",
+              icon: (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              ),
               title: "Security Review",
-              desc: "Automated vulnerability detection and fixes",
-              color: "blue",
+              desc: "Automatic security analysis and recommendations",
             },
             {
-              icon: "⚡",
-              title: "Real-time Execution",
-              desc: "Test code in secure sandbox instantly",
-              color: "pink",
+              icon: (
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              ),
+              title: "Execution",
+              desc: "Run and test code instantly",
             },
           ].map((feature, i) => (
             <div
               key={i}
-              className="group relative p-8 bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl transition-all duration-500 hover:bg-white/10 hover:border-purple-500/50 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20 cursor-pointer"
+              className="p-8 border border-gray-800 rounded-lg hover:border-blue-600 transition-all duration-200 hover:shadow-lg hover:shadow-blue-600/20"
             >
-              <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-500">
-                {feature.icon}
-              </div>
+              <div className="text-blue-600 mb-4">{feature.icon}</div>
               <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
-              <p className="text-gray-400 leading-relaxed">{feature.desc}</p>
+              <p className="text-gray-400 text-sm leading-relaxed">{feature.desc}</p>
             </div>
           ))}
         </div>
 
-        {/* CTA Button */}
-        <button
-          onClick={onStartCoding}
-          className="group mt-16 px-10 py-5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/50 hover:shadow-purple-500/80 transition-all duration-300 hover:scale-110 transform relative overflow-hidden"
-        >
-          <span className="relative z-10 flex items-center space-x-2">
-            <span>Start Coding Now</span>
-            <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
-          </span>
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </button>
-
         {/* Stats */}
-        <div className="flex flex-wrap justify-center gap-8 mt-20">
+        <div className="flex justify-center gap-16 mt-20">
           {[
-            { value: "6", label: "AI Tools", icon: "🛠️" },
-            { value: "24", label: "Code Patterns", icon: "📚" },
-            { value: "7", label: "Workflow Steps", icon: "🔄" },
-            { value: "100%", label: "Decentralized", icon: "🌐" },
+            { value: "6", label: "AI Tools" },
+            { value: "24", label: "Patterns" },
+            { value: "7", label: "Workflow Steps" },
           ].map((stat, i) => (
-            <div
-              key={i}
-              className="text-center px-6 py-4 bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl hover:bg-white/10 transition-all duration-300"
-            >
-              <div className="text-2xl mb-1">{stat.icon}</div>
-              <div className="text-4xl font-bold text-white mb-1">{stat.value}</div>
+            <div key={i} className="text-center">
+              <div className="text-5xl font-bold text-white mb-2">{stat.value}</div>
               <div className="text-sm text-gray-400">{stat.label}</div>
             </div>
           ))}
         </div>
-      </div>
 
-      <style jsx global>{`
-        @keyframes gradient {
-          0%,
-          100% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-        }
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
-        }
-      `}</style>
+        {/* Footer Text */}
+        <div className="mt-20 pt-8 border-t border-gray-800">
+          <p className="text-sm text-gray-400">
+            Built for Nosana Agents 102 Challenge
+          </p>
+          <p className="text-sm text-gray-500 mt-2">
+            Powered by <span className="text-blue-600 font-semibold">Mastra</span> + Decentralized AI
+          </p>
+        </div>
+      </div>
     </main>
   )
 }
