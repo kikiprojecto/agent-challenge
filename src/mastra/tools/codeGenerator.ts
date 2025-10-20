@@ -226,17 +226,13 @@ export const codeGeneratorTool = createTool({
   inputSchema,
   outputSchema,
   
-  execute: async ({ context, prompt, language, context: codeContext, projectStructure }) => {
+  execute: async ({ context, prompt, language, projectStructure }) => {
     try {
       // Build the system prompt with language-specific guidelines
       const systemPrompt = LANGUAGE_PROMPTS[language];
       
       // Build the user prompt with all context
       let userPrompt = `Generate ${language} code for the following requirement:\n\n${prompt}`;
-      
-      if (codeContext) {
-        userPrompt += `\n\nExisting code context:\n${codeContext}`;
-      }
       
       if (projectStructure) {
         userPrompt += `\n\nProject structure:\n${JSON.stringify(projectStructure, null, 2)}`;
