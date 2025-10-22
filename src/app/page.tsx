@@ -53,31 +53,31 @@ export default function Home() {
           src="/images/neurocoder-bg.jpg"
           alt="Neural Network Background"
           fill
-          className="object-cover opacity-30"
+          className="object-cover opacity-50"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/80"></div>
       </div>
 
       {/* Header */}
       <header className="relative z-10 border-b border-white/10 bg-black/40 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="relative w-16 h-16">
+            <div className="flex items-center space-x-3">
+              <div className="relative w-16 h-16 flex items-center group cursor-pointer">
                 <Image
                   src="/images/neurocoder-logo.png"
                   alt="NeuroCoder Logo"
                   width={64}
                   height={64}
-                  className="object-contain"
+                  className="object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_15px_rgba(6,182,212,0.8)] group-hover:brightness-110"
                 />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-white">
+              <div className="flex flex-col gap-0.5">
+                <h1 className="text-xl font-bold text-white leading-tight">
                   NeuroCoder AI
                 </h1>
-                <p className="text-xs text-gray-400">Self-Improving Code Intelligence</p>
+                <p className="text-xs text-gray-400 leading-tight">Self-Improving Code Intelligence</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -134,12 +134,14 @@ export default function Home() {
                 <br />
                 <span className="text-white">AI Code Generation</span>
               </h2>
-              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                Self-improving agents on <span className="text-cyan-400 font-semibold">decentralized infrastructure</span>.
-              </p>
-              <p className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                Generate, review, test, and deploy code with neural intelligence.
-              </p>
+              <div className="text-xl md:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed space-y-1">
+                <p>
+                  Self-improving agents on <span className="text-cyan-400 font-semibold">decentralized infrastructure</span>.
+                </p>
+                <p>
+                  Generate, review, test, and deploy code with neural intelligence.
+                </p>
+              </div>
             </div>
 
             {/* CTA Button */}
@@ -233,14 +235,14 @@ export default function Home() {
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all cursor-pointer"
+                    className="w-full px-4 py-3 bg-black/60 backdrop-blur-xl border border-cyan-500/30 rounded-xl text-white font-medium shadow-lg shadow-cyan-500/10 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 focus:shadow-cyan-500/20 transition-all cursor-pointer"
                   >
-                    <option value="python">Python</option>
-                    <option value="javascript">JavaScript</option>
-                    <option value="typescript">TypeScript</option>
-                    <option value="rust">Rust</option>
-                    <option value="solidity">Solidity</option>
-                    <option value="go">Go</option>
+                    <option value="python" className="bg-black text-white font-medium py-2">Python</option>
+                    <option value="javascript" className="bg-black text-white font-medium py-2">JavaScript</option>
+                    <option value="typescript" className="bg-black text-white font-medium py-2">TypeScript</option>
+                    <option value="rust" className="bg-black text-white font-medium py-2">Rust</option>
+                    <option value="solidity" className="bg-black text-white font-medium py-2">Solidity</option>
+                    <option value="go" className="bg-black text-white font-medium py-2">Go</option>
                   </select>
                 </div>
 
