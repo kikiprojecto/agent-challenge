@@ -1,6 +1,7 @@
 # Git
 .git
 .gitignore
+.github/
 
 # Node
 node_modules
@@ -9,16 +10,19 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Environment files
+# Environment files (keep .env for production)
 .env.local
 .env.example
 .env.*.local
-.env.*
+.env.development
+.env.test
 
-# Build output
-.mastra/
+# Build output (will be rebuilt in Docker)
+.next/
+.mastra/output/
 dist/
 build/
+out/
 
 # IDE
 .vscode/
@@ -33,19 +37,42 @@ Thumbs.db
 
 # Documentation
 *.md
+!README.md
 LICENSE
 
 # Docker
 Dockerfile
 .dockerignore
+docker-compose*.yml
+
+# Deployment scripts
+deploy.sh
+deploy.ps1
 
 # Temporary files
 *.tmp
 *.temp
 .cache/
+tmp/
 
 # Test files
 coverage/
 .nyc_output/
 *.test.js
+*.test.ts
 *.spec.js
+*.spec.ts
+__tests__/
+__mocks__/
+
+# Logs
+logs/
+*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Assets (if not needed)
+assets/
+public/images/*.psd
+public/images/*.ai

@@ -1,87 +1,43 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { codeGeneratorTool } from '@/mastra/tools/codeGenerator';
+import { codeReviewerTool } from '@/mastra/tools/codeReviewer';
 
-// Language-specific code templates
-const CODE_TEMPLATES: Record<string, (prompt: string) => string> = {
-  python: (prompt) => `# ${prompt}
+// Helper to create Mastra-compatible LLM context
+function createLLMContext() {
+  return {
+    llm: {
+      generate: async (config: any) => {
+        try {
+          const ollamaUrl = process.env.OLLAMA_API_URL || 'https://3yt39qx97wc9hqwwmylrphi4jsxrngjzxnjakkybnxbw.node.k8s.prd.nos.ci/api';
+          const model = process.env.MODEL_NAME_AT_ENDPOINT || 'qwen3:8b';
+          
+          // Format messages for Ollama
+          const prompt = config.messages.map((m: any) => m.content).join('\n\n');
+          
+          const response = await fetch(`${ollamaUrl}/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              model,
+              prompt,
+              stream: false,
+            }),
+          });
 
-def main():
-    """
-    ${prompt}
-    """
-    print("Hello from Python!")
-    # TODO: Implement your logic here
-    pass
+          if (!response.ok) {
+            throw new Error(`Ollama API error: ${response.statusText}`);
+          }
 
-if __name__ == "__main__":
-    main()`,
-
-  javascript: (prompt) => `// ${prompt}
-
-function main() {
-  /**
-   * ${prompt}
-   */
-  console.log("Hello from JavaScript!");
-  // TODO: Implement your logic here
-}
-
-main();`,
-
-  typescript: (prompt) => `// ${prompt}
-
-interface Config {
-  message: string;
-}
-
-function main(): void {
-  /**
-   * ${prompt}
-   */
-  const config: Config = {
-    message: "Hello from TypeScript!"
-  };
-  
-  console.log(config.message);
-  // TODO: Implement your logic here
-}
-
-main();`,
-
-  rust: (prompt) => `// ${prompt}
-
-fn main() {
-    /// ${prompt}
-    println!("Hello from Rust!");
-    // TODO: Implement your logic here
-}`,
-
-  solidity: (prompt) => `// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-/**
- * @title ${prompt}
- * @dev Implementation of ${prompt}
- */
-contract MyContract {
-    string public message;
-    
-    constructor() {
-        message = "Hello from Solidity!";
+          const data = await response.json();
+          return { text: data.response || '' };
+        } catch (error) {
+          console.error('LLM generation error:', error);
+          throw error;
+        }
+      }
     }
-    
-    // TODO: Implement your logic here
-}`,
-
-  go: (prompt) => `package main
-
-import "fmt"
-
-// ${prompt}
-func main() {
-    fmt.Println("Hello from Go!")
-    // TODO: Implement your logic here
-}`
-};
+  };
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -94,71 +50,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const startTime = Date.now();
+    const llmContext = createLLMContext();
 
-    // Generate code using template (Ollama fallback)
-    const codeTemplate = CODE_TEMPLATES[language.toLowerCase()] || CODE_TEMPLATES.python;
-    const generatedText = `Here's a ${language} implementation for: ${prompt}\n\n\`\`\`${language}\n${codeTemplate(prompt)}\n\`\`\`\n\nThis is a basic template. To get AI-generated code, please:\n1. Install Ollama locally (https://ollama.ai)\n2. Run: ollama pull qwen3:8b\n3. Start Ollama service\n\nThe code above provides a starting point that you can customize based on your specific requirements.`;
+    // Generate code
+    console.log('Generating code...');
+    // @ts-ignore - Bypassing Mastra's complex type system for direct tool invocation
+    const genResult = await codeGeneratorTool.execute({
+      context: llmContext,
+      prompt,
+      language,
+    });
 
-    const executionTime = (Date.now() - startTime) / 1000;
-
-    // Extract code from markdown blocks
-    let code = '';
-    let explanation = '';
-    let dependencies: string[] = [];
-    let complexity = 'medium';
-
-    // Extract code from markdown code blocks
-    const codeBlockMatch = generatedText.match(/```[\w]*\n([\s\S]*?)```/);
-    if (codeBlockMatch) {
-      code = codeBlockMatch[1].trim();
-    }
-
-    // Extract explanation (text outside code blocks)
-    explanation = generatedText.replace(/```[\s\S]*?```/g, '').trim();
-    if (!explanation || explanation.length < 20) {
-      explanation = `Generated ${language} code based on your requirements.`;
-    }
-
-    // Parse dependencies from code
-    if (code) {
-      // Simple dependency extraction
-      const importMatches = code.matchAll(/(?:import|from|require)\s+.*?['"]([^'"]+)['"]/g);
-      for (const match of importMatches) {
-        const dep = match[1];
-        if (dep && !dep.startsWith('.') && !dep.startsWith('/')) {
-          dependencies.push(dep.split('/')[0]);
-        }
-      }
-      dependencies = [...new Set(dependencies)]; // Remove duplicates
-    }
-
-    // Estimate complexity
-    const lines = code.split('\n').length;
-    if (lines < 30) complexity = 'simple';
-    else if (lines < 100) complexity = 'medium';
-    else complexity = 'complex';
+    // Review code
+    console.log('Reviewing code...');
+    // @ts-ignore - Bypassing Mastra's complex type system for direct tool invocation
+    const reviewResult = await codeReviewerTool.execute({
+      context: llmContext,
+      code: genResult.code,
+      language,
+      reviewType: 'all',
+    });
 
     return NextResponse.json({
-      code: code || '// No code generated',
-      explanation: explanation || 'Code generation in progress...',
-      dependencies,
-      complexity,
-      reviewScore: 95,
-      executionTime,
+      success: true,
+      code: genResult.code,
+      explanation: genResult.explanation,
+      dependencies: genResult.dependencies,
+      complexity: genResult.estimatedComplexity,
+      reviewScore: reviewResult.overallScore,
+      issues: reviewResult.issues.slice(0, 5), // Top 5 issues
     });
+
   } catch (error) {
-    console.error('Code generation error:', error);
+    console.error('Generation error:', error);
     return NextResponse.json(
-      { 
-        error: 'Generation failed', 
-        details: error instanceof Error ? error.message : 'Unknown error',
-        code: `// Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        explanation: 'An error occurred during code generation. Please try again.',
-        dependencies: [],
-        complexity: 'simple',
-        reviewScore: 0,
-        executionTime: 0,
+      {
+        error: 'Generation failed',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );

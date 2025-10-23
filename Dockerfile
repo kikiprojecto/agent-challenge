@@ -1,52 +1,64 @@
 # syntax=docker/dockerfile:1
 
-FROM node:lts AS build
-
-RUN corepack enable
-
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+# Build stage
+FROM node:20-alpine AS build
 
 # Disable Analytics/Telemetry
 ENV DISABLE_TELEMETRY=true
 ENV POSTHOG_DISABLED=true
 ENV MASTRA_TELEMETRY_DISABLED=true
 ENV DO_NOT_TRACK=1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # Ensure logs are visible (disable buffering)
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY pnpm-lock.yaml ./
+# Copy package files
+COPY package*.json ./
 
-RUN --mount=type=cache,target=/pnpm/store \
-  pnpm fetch --frozen-lockfile
+# Install dependencies
+RUN npm ci --only=production --ignore-scripts && \
+    npm cache clean --force
 
-COPY package.json ./
-
-RUN --mount=type=cache,target=/pnpm/store \
-  pnpm install --frozen-lockfile --prod --offline
-
+# Copy source code
 COPY . .
 
-RUN pnpm build
+# Build the application
+RUN npm run build
 
-FROM node:lts AS runtime
+# Runtime stage
+FROM node:20-alpine AS runtime
 
-RUN groupadd -g 1001 appgroup && \
-  useradd -u 1001 -g appgroup -m -d /app -s /bin/false appuser
+# Create non-root user
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -u 1001 -S appuser -G appgroup
 
 WORKDIR /app
 
-COPY --from=build --chown=appuser:appgroup /app ./
+# Copy built application from build stage
+COPY --from=build --chown=appuser:appgroup /app/node_modules ./node_modules
+COPY --from=build --chown=appuser:appgroup /app/.next ./.next
+COPY --from=build --chown=appuser:appgroup /app/.mastra ./.mastra
+COPY --from=build --chown=appuser:appgroup /app/public ./public
+COPY --from=build --chown=appuser:appgroup /app/package*.json ./
+COPY --from=build --chown=appuser:appgroup /app/next.config.ts ./
 
+# Environment variables
 ENV NODE_ENV=production \
-  NODE_OPTIONS="--enable-source-maps"
+    NODE_OPTIONS="--enable-source-maps" \
+    PORT=3000
 
 USER appuser
 
+# Expose ports
 EXPOSE 3000
 EXPOSE 4111
 
-ENTRYPOINT ["npm", "start"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
+
+# Start the application
+CMD ["npm", "start"]
