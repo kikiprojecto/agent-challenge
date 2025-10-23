@@ -3,6 +3,9 @@
 # Build stage
 FROM node:20-alpine AS build
 
+# Install build dependencies
+RUN apk add --no-cache python3 make g++
+
 # Disable Analytics/Telemetry
 ENV DISABLE_TELEMETRY=true
 ENV POSTHOG_DISABLED=true
@@ -18,8 +21,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install ALL dependencies (including dev dependencies needed for build)
-RUN npm ci --ignore-scripts && \
+# Install dependencies with npm install (more forgiving than npm ci)
+RUN npm install --legacy-peer-deps && \
     npm cache clean --force
 
 # Copy source code
