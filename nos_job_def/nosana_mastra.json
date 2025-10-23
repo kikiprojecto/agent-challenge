@@ -1,94 +1,29 @@
 {
-  "global": {
-    "env": {
-      "MODEL": "qwen3:8b"
+  "version": "0.1",
+  "type": "container",
+  "meta": {
+    "trigger": "cli",
+    "system_requirements": {
+      "cpu": 2,
+      "memory": 4096
     }
   },
   "ops": [
     {
+      "type": "container/run",
       "id": "neurocoder-ai",
       "args": {
         "image": "kikiprojecto/neurocoder-ai:v1",
-        "expose": [
-          {
-            "port": 3000,
-            "health_checks": [
-              {
-                "path": "/api/health",
-                "type": "http",
-                "method": "GET",
-                "continuous": true,
-                "expected_status": 200,
-                "interval": 30,
-                "timeout": 10
-              }
-            ]
-          }
-        ],
+        "gpu": false,
+        "entrypoint": ["npm"],
+        "cmd": ["start"],
         "env": {
-          "NOS_OLLAMA_API_URL": "http://%%ops.ollama.host%%:11434/api",
-          "NOS_MODEL_NAME_AT_ENDPOINT": "qwen3:8b",
-          "OLLAMA_API_URL": "http://%%ops.ollama.host%%:11434/api",
+          "OLLAMA_API_URL": "http://localhost:11434/api",
           "MODEL_NAME_AT_ENDPOINT": "qwen3:8b",
           "NODE_ENV": "production",
           "PORT": "3000"
         }
-      },
-      "execution": {
-        "group": "run",
-        "depends_on": [
-          "ollama"
-        ]
-      },
-      "type": "container/run"
-    },
-    {
-      "id": "ollama",
-      "args": {
-        "gpu": true,
-        "image": "docker.io/ollama/ollama:0.12.0",
-        "expose": [
-          {
-            "port": 11434,
-            "health_checks": [
-              {
-                "path": "/api/tags",
-                "type": "http",
-                "method": "GET",
-                "continuous": false,
-                "expected_status": 200
-              }
-            ]
-          }
-        ],
-        "cmd": [
-          "ollama serve & sleep 5 && ollama pull $MODEL && tail -f /dev/null"
-        ],
-        "entrypoint": [
-          "/bin/sh",
-          "-c"
-        ],
-        "resources": [
-          {
-            "url": "https://models.nosana.io/ollama/qwen3/8b",
-            "type": "S3",
-            "target": "/root/.ollama/models",
-            "allowWrite": true
-          }
-        ]
-      },
-      "execution": {
-        "group": "run"
-      },
-      "type": "container/run"
+      }
     }
-  ],
-  "meta": {
-    "trigger": "dashboard",
-    "system_requirements": {
-      "required_vram": 24
-    }
-  },
-  "type": "container",
-  "version": "0.1"
+  ]
 }

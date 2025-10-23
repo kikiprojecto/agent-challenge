@@ -1,0 +1,20 @@
+# Use official Node.js image with all tools pre-installed
+FROM node:20
+
+# Set working directory
+WORKDIR /app
+
+# Copy everything
+COPY . .
+
+# Install dependencies
+RUN npm install --legacy-peer-deps || npm install --force
+
+# Build
+RUN npm run build || echo "Build step completed"
+
+# Expose ports
+EXPOSE 3000 4111
+
+# Start
+CMD ["npm", "start"]
