@@ -2,8 +2,9 @@ name: Build and Deploy to Nosana
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: 
+      - main
+  workflow_dispatch: {}
 
 env:
   IMAGE_NAME: kikiprojecto/neurocoder-ai
