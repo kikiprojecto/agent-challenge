@@ -18,8 +18,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production --ignore-scripts && \
+# Install ALL dependencies (including dev dependencies needed for build)
+RUN npm ci --ignore-scripts && \
     npm cache clean --force
 
 # Copy source code
@@ -27,6 +27,9 @@ COPY . .
 
 # Build the application
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm prune --production
 
 # Runtime stage
 FROM node:20-alpine AS runtime
