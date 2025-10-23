@@ -19,7 +19,7 @@ pnpm-debug.log*
 
 # Build output (will be rebuilt in Docker)
 .next/
-.mastra/output/
+.mastra/
 dist/
 build/
 out/
