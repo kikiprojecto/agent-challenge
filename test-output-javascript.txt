@@ -1,0 +1,17 @@
+﻿/**
+ * Sorts an array of numbers in descending order
+ * @param {number[]} numbers - Array of numbers to sort
+ * @returns {number[]} Sorted array
+ */
+function sortNumbers(numbers) {
+  if (!Array.isArray(numbers)) {
+    throw new TypeError('Input must be an array');
+  }
+  return [...numbers].sort((a, b) => b - a);
+}
+
+// Example usage
+const result = sortNumbers([7, 5, 0, 3, 9, 2, 4, 8, 5, 4]);
+console.log('Sorted:', result);
+
+module.exports = { sortNumbers };

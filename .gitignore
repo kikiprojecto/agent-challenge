@@ -1,92 +1,63 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
 
-# dependencies
-node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Testing
+coverage/
+.nyc_output/
 
-# testing
-/coverage
+# Production
+build/
+dist/
+.next/
+out/
 
-# next.js
-.next
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env files (can opt-in for committing if needed)
+# Environment
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-memory.*
-.mastra
-
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+# Logs
+logs/
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 .pnpm-debug.log*
 
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
 
-# vercel
-.vercel
+# Backup files
+*.backup
+*.bak
+*.tmp
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Unnecessary docs (keep only README.md)
+ALL_FIXES_SUMMARY.md
+QUICK_FIX_GUIDE.md
+CRITICAL_MEMORY_FIX.md
+COMPREHENSIVE_FIX_COMPLETE.md
+LLM_ERROR_FIX_COMPLETE.md
+SETUP.md
 
-.mastra/
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
-# lock files
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-bun.lockb
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache

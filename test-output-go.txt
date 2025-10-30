@@ -1,0 +1,24 @@
+﻿package main
+
+import (
+    "fmt"
+    "sort"
+)
+
+// SortNumbers sorts a slice of integers in descending order
+func SortNumbers(numbers []int) []int {
+    sorted := make([]int, len(numbers))
+    copy(sorted, numbers)
+    sort.Ints(sorted)
+    // Reverse for descending order
+    for i, j := 0, len(sorted)-1; i < j; i, j = i+1, j-1 {
+        sorted[i], sorted[j] = sorted[j], sorted[i]
+    }
+    return sorted
+}
+
+func main() {
+    nums := []int{7, 5, 0, 3, 9, 2, 4, 8, 5, 4}
+    result := SortNumbers(nums)
+    fmt.Printf("Sorted: %v\n", result)
+}

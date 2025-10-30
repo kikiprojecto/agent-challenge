@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev:agent": "mastra dev",
-    "dev:ui": "next dev --turbopack",
+    "dev:ui": "next dev",
     "dev:debug": "LOG_LEVEL=debug npm run dev",
     "build:ui": "next build",
     "start:ui": "next start",
@@ -12,7 +12,10 @@
     "start:agent": "mastra start",
     "lint": "next lint",
     "build": "mastra build && next build",
-    "start": "concurrently \"npm:start:agent\" \"npm:start:ui\""
+    "start": "concurrently \"npm:start:agent\" \"npm:start:ui\"",
+    "test:ollama": "powershell -ExecutionPolicy Bypass -File test-ollama-connection.ps1",
+    "validate": "node scripts/validate-setup.js",
+    "predev:ui": "npm run validate"
   },
   "dependencies": {
     "@ag-ui/mastra": "0.1.0",
@@ -38,6 +41,10 @@
     "mastra": "0.13.4",
     "next": ">=15.5.4",
     "ollama-ai-provider-v2": "^1.5.0",
+    "prismjs": "^1.29.0",
+    "react-hot-toast": "^2.4.1",
+    "framer-motion": "^10.16.0",
+    "recharts": "^2.10.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.3.1",
